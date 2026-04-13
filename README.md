@@ -39,3 +39,102 @@ Automated annotation was performed using `SingleR`11 with the ImmGen reference f
 Pseudobulk differential expression was performed on macrophages (D05 vs naive) by aggregating cells per replicate using `AggregateExpression` and testing with DESeq2,9 which accounts for within-replicate non-independence that can inflate false discovery rates in single-cell analyses.17  
 
 Significance was defined as adjusted p < 0.05 and |log₂FC| > 1. Over-representation analysis (ORA) and gene set enrichment analysis (GSEA) were performed using clusterProfiler¹⁰ with GO:BP terms and the `org.Mm.eg.db` annotation database,14 restricting gene sets to 10–500 genes to exclude poorly defined or overly broad pathways.
+
+## Results
+The Seurat object contained 156,572 cells across 25,129 genes. Quality control filtering based on gene count (200 to 6,000) and mitochondrial content (<20%) removed only 27 cells, indicating prior preprocessing (Figure 1). The remaining 156,545 cells were distributed across tissue regions (RM: 67,171; OM: 63,656; LNG: 25,745) and time points (Naive: 30,354; D02: 40,148; D05: 26,344; D08: 29,523; D14: 30,203), consistent with the experimental design. Approximately 36% of cells lacked mouse identity assignments but were evenly distributed across conditions.
+
+<p align="center">
+  <img src="figures/01_qc_violin-1.png" width="80%">
+</p>
+<p align="center">
+  <em><strong>Figure 1.</strong> Violin plots of quality control metrics across time points. Distributions of detected genes (nFeature_RNA), total UMI counts (nCount_RNA), and mitochondrial gene percentage (percent.mt) are shown for each condition (D02, D05, D08, D14, naive). The width of each violin reflects the density of cells at a given value. Consistent distributions across time points indicate stable data quality following preprocessing and filtering.</em>
+</p>
+
+Clustering identified 28 transcriptionally distinct populations. UMAP revealed clear separation between immune, epithelial, and olfactory cell populations (Figure 2). Tissue-specific patterns were observed, with olfactory sensory neurons restricted to the OM and epithelial populations enriched in RM and LNG (Figure 3). Immune populations, particularly neutrophils and macrophages, expanded at later time points (D05 to D08), while structural populations remained stable (Figure 4). No batch effects were observed, as cells from different conditions were well intermixed within clusters.
+
+<p align="center">
+  <img src="figures/06_umap_by_tissue-1.png" width="90%">
+</p>
+<p align="center">
+  <em><strong>Figure 2.</strong> UMAP visualization split by tissue region (LNG, OM, RM). Each point represents a single cell positioned by transcriptional similarity and colored by cluster identity. Clusters are largely conserved across tissues, with differences in relative abundance indicating tissue-specific enrichment of certain cell populations.</em>
+</p>
+
+<p align="center">
+  <img src="figures/07_umap_by_time-1.png" width="100%">
+</p>
+<p align="center">
+  <em><strong>Figure 3.</strong> UMAP visualization split by time point (D02, D05, D08, D14, naive). Cells are colored by cluster identity. Changes in cluster density across time points indicate expansion of immune-associated clusters during infection and stabilization at later stages.</em>
+</p>
+
+<p align="center">
+  <img src="figures/11_umap_singler-1.png" width="70%">
+</p>
+<p align="center">
+  <em><strong>Figure 4.</strong> UMAP visualization with automated cell type annotation using SingleR and the ImmGen reference. Each point represents a cell colored by predicted cell type. Labels indicate major populations including macrophages, monocytes, neutrophils, epithelial cells, and stromal cells. Some non-immune populations are broadly classified due to limitations of the immune-focused reference.</em>
+</p>
+
+SingleR annotation identified major immune populations including macrophages, monocytes, neutrophils, B cells, and dendritic cells (Figure 5). However, several non-immune clusters were misclassified due to the immune-only reference. Manual validation using marker gene expression corrected these assignments (Figure 6). Final annotations included 12 cell types spanning immune, epithelial, and stromal populations.
+
+<p align="center">
+  <img src="figures/21_dotplot_markers-1.png" width="70%">
+</p>
+<p align="center">
+  <em><strong>Figure 5.</strong> Dot plot of canonical marker gene expression across clusters. Each row represents a cluster and each column represents a gene. Dot size indicates the percentage of cells expressing the gene, while color intensity reflects average scaled expression, with darker blue indicating higher expression. Distinct marker patterns confirm identities of immune, epithelial, and olfactory cell populations.</em>
+</p>
+
+<p align="center">
+  <img src="figures/22_umap_annotated-1.png" width="60%">
+</p>
+<p align="center">
+  <em><strong>Figure 6.</strong> UMAP visualization of manually refined cell type annotations. Cells are colored by final assigned identities based on marker gene expression. Labels indicate major populations including macrophages, neutrophils, B cells, T/NK cells, epithelial cells, and olfactory sensory neurons, demonstrating clear separation of biologically distinct cell types.</em>
+</p>
+
+Interferon-stimulated genes such as Isg15, Ifit1, and Oasl2 were enriched in macrophages and neutrophils, indicating an active innate antiviral response (Figure 7). Chemokines Cxcl10 and Ccl2 were highly expressed in macrophages, consistent with recruitment signaling (Figure 8). Ifng expression was restricted to T and NK cells, while Stat1 showed broad expression across immune and epithelial populations, indicating widespread interferon pathway activation (Figure 9).
+
+<p align="center">
+  <img src="figures/23_features_ISGs-1.png" width="70%">
+</p>
+<p align="center">
+  <em><strong>Figure 7.</strong> Feature plots showing expression of interferon-stimulated genes <em>Isg15</em>, <em>Ifit1</em>, <em>Oasl2</em>, and <em>Rsad2</em>. Color intensity represents normalized expression levels, with darker purple indicating higher expression. These genes are enriched in macrophage and neutrophil clusters.</em>
+</p>
+
+<p align="center">
+  <img src="figures/24_features_cytokines-1.png" width="70%">
+</p>
+<p align="center">
+  <em><strong>Figure 8.</strong> Feature plots of cytokine and chemokine expression, including <em>Cxcl10</em>, <em>Ccl2</em>, <em>Il6</em>, and <em>Tnf</em>. Color intensity represents normalized expression levels. Expression is concentrated in macrophage-rich regions.</em>
+</p>
+
+<p align="center">
+  <img src="figures/25_features_antiviral-1.png" width="70%">
+</p>
+<p align="center">
+  <em><strong>Figure 9.</strong> Feature plots of antiviral signaling genes <em>Ifnb1</em>, <em>Ifng</em>, and <em>Stat1</em>. Color intensity represents normalized expression levels. <em>Ifng</em> expression is restricted to lymphocyte populations, while <em>Stat1</em> shows broader expression, indicating widespread activation of interferon signaling pathways.</em>
+</p>
+
+Pseudobulk analysis of macrophages (D05 vs naive) identified 62 significant genes, with 61 upregulated and one downregulated. Upregulated genes were dominated by interferon-stimulated genes including Ifit2, Ifit3, Isg15, and Irf7. Additional genes such as Zbp1 and Slfn4 reflected antiviral sensing and myeloid activation. The only downregulated gene, Sox18, is associated with vascular development, suggesting suppression of non-immune processes during infection.
+
+Over-representation analysis identified 128 enriched biological processes, dominated by antiviral and interferon-related pathways such as “defense response to virus” and “interferon-mediated signaling” (Figure 10). GSEA identified 390 enriched pathways, with strong enrichment of interferon response and antiviral defense processes among upregulated genes, and suppression of translational and vascular pathways among downregulated gene sets (Figure 11).
+
+<p align="center">
+  <img src="figures/26_ora_dotplot-1.png" width="60%">
+</p>
+<p align="center">
+  <em><strong>Figure 10.</strong> Over-representation analysis of differentially expressed genes in macrophages (D05 vs naive). Each dot represents a GO biological process. The x-axis shows the gene ratio, dot size indicates the number of genes contributing to the term, and color reflects adjusted p-value. Enriched pathways are dominated by antiviral and interferon-related processes.</em>
+</p>
+
+<p align="center">
+  <img src="figures/28_gsea_dotplot-1.png" width="60%">
+</p>
+<p align="center">
+  <em><strong>Figure 11.</strong> Gene set enrichment analysis of ranked genes in macrophages (D05 vs naive). Each dot represents an enriched pathway. The x-axis shows the gene ratio, dot size indicates gene set size, and color reflects adjusted p-value. Upregulated pathways are associated with antiviral defense and interferon signaling, while other pathways reflect cellular regulatory processes.</em>
+</p>
+
+Cell type proportions shifted over time, with macrophages and neutrophils increasing from D02 to D08, consistent with immune recruitment during infection (Figure 12). By D14, immune populations decreased, indicating resolution of the response. Epithelial and olfactory populations remained relatively stable across all time points.
+
+<p align="center">
+  <img src="figures/31_composition_by_time-1.png" width="60%">
+</p>
+<p align="center">
+  <em><strong>Figure 12.</strong> Cell type composition across time points. Stacked bar plots show the proportion of each annotated cell type within each condition (D02, D05, D08, D14, naive). Each bar sums to 1, and colored segments represent relative abundance of cell types. Immune populations, including macrophages and neutrophils, increase at intermediate time points, while epithelial and olfactory populations remain relatively stable.</em>
+</p>
